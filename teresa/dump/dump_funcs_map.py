@@ -1,6 +1,9 @@
 from teresa.dump.lt1_dump_data import lt1_dump_data
 from teresa.dump.lt1_dump_header2doris import lt1_dump_header2doris
 
+from teresa.dump.lt4_dump_data import lt4_dump_data
+from teresa.dump.lt4_dump_header2doris import lt4_dump_header2doris
+
 from teresa.dump.bc_dump_data import bc_dump_data
 from teresa.dump.bc_dump_header2doris import bc_dump_header2doris
 
@@ -12,6 +15,7 @@ from teresa.dump.tsx_dump_header2doris import tsx_dump_header2doris
 
 dump_header2doris_funcs = {
     'LT1': lt1_dump_header2doris,
+    'LT4': lt4_dump_header2doris,
     'BC': bc_dump_header2doris,
     'CSK': csk_dump_header2doris,
     'TSX': tsx_dump_header2doris,
@@ -19,7 +23,9 @@ dump_header2doris_funcs = {
 
 dump_data_funcs = {
     'LT1': lt1_dump_data,
+    'LT4': lt4_dump_data,
     'BC': bc_dump_data,
     'CSK': csk_dump_data,
     'TSX': tsx_dump_data,
 }
+    

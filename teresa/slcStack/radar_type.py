@@ -8,6 +8,7 @@ radar_type_pat_map = {
     'BC': r'^bc.*\.xml$',
     'CSK': r'^CSK.*\.h5$',  
     'TSX': r'(?i)^(TSX|TDX|PAZ).*\.xml$',
+    'LT4': r'^JZ1.*\.(meta\.xml|tiff)$',
 }
 
 # This map is used to store different types of radar data and 
@@ -17,6 +18,7 @@ is_meta_file = {
     'LT1': lambda x: bool(re.search(r'^LT1.*\.meta\.xml$', x)),
     'BC': lambda x: bool(re.search(r'^bc.*\.xml$', x)),
     'CSK': lambda x: bool(re.search(r'^CSK.*\.h5$', x)), 
+    'LT4': lambda x: bool(re.search(r'^JZ1.*\.meta\.xml$', x)),
     'TSX': lambda x: bool(re.search(r'^(TSX|TDX|PAZ).*\.xml$', x, re.IGNORECASE)),
 }
 
@@ -27,6 +29,7 @@ is_data_file = {
     'LT1': lambda x: bool(re.search(r'^LT1.*\.tiff$', x)),
     'BC': lambda x: bool(re.search(r'^bc.*\.tiff$', x)),
     'CSK': lambda x: bool(re.search(r'^CSK.*\.h5$', x)), 
+    'LT4': lambda x: bool(re.search(r'^JZ1.*\.tiff$', x)),
     'TSX': lambda x: bool(re.search(r'\.(cos|cosar|dat)$', x, re.IGNORECASE)),
 }
 
@@ -50,4 +53,6 @@ get_date_from_filename = {
             'data': lambda x: re.search(r'_(20\d{6})\d{6}_', x).group(1)}, 
     'TSX': {'meta': _date_from_tsx_filename,
             'data': _date_from_tsx_filename},
+    'LT4': {'meta': lambda x: re.search(r'_(20\d{6})_', x).group(1),
+            'data': lambda x: re.search(r'_(20\d{6})_', x).group(1)},
 }
