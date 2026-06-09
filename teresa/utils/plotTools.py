@@ -81,9 +81,10 @@ def plot_phase(filename, output_png, nlines, npixels, dtype, downsample_factor=4
 
 
 if __name__ == "__main__":
-    num_of_lines  = 17920
-    num_of_pixels = 20736
-    filename      = "/data/tests/jinting/changsha/insar/stack/process_pro/workspace/20240309/slave_rsmp.raw"
+    num_of_lines  = 7448
+    num_of_pixels = 3795
+    filename      = "/mnt/data/TSX_TEST/workspace/20090715/cint.minrefdem.raw"
+    out_png = "/mnt/data/TSX_TEST/workspace/20090715/cint.minrefdem.png"
 
-    plot_amplitude(filename, num_of_lines, num_of_pixels)
-    # plot_phase(filename, num_of_lines, num_of_pixels, dtype)
+    # plot_amplitude(filename, num_of_lines, num_of_pixels)
+    plot_phase(filename, out_png, num_of_lines, num_of_pixels, np.float32)

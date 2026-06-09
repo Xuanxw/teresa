@@ -7,6 +7,7 @@ radar_type_pat_map = {
     'LT1': r'^LT1.*\.meta\.xml$',
     'BC': r'^bc.*\.xml$',
     'CSK': r'^CSK.*\.h5$',  
+    'TSX': r'(?i)^(TSX|TDX|PAZ).*\.xml$',
 }
 
 # This map is used to store different types of radar data and 
@@ -16,6 +17,7 @@ is_meta_file = {
     'LT1': lambda x: bool(re.search(r'^LT1.*\.meta\.xml$', x)),
     'BC': lambda x: bool(re.search(r'^bc.*\.xml$', x)),
     'CSK': lambda x: bool(re.search(r'^CSK.*\.h5$', x)), 
+    'TSX': lambda x: bool(re.search(r'^(TSX|TDX|PAZ).*\.xml$', x, re.IGNORECASE)),
 }
 
 # This map is used to store different types of radar data and 
@@ -25,7 +27,17 @@ is_data_file = {
     'LT1': lambda x: bool(re.search(r'^LT1.*\.tiff$', x)),
     'BC': lambda x: bool(re.search(r'^bc.*\.tiff$', x)),
     'CSK': lambda x: bool(re.search(r'^CSK.*\.h5$', x)), 
+    'TSX': lambda x: bool(re.search(r'\.(cos|cosar|dat)$', x, re.IGNORECASE)),
 }
+
+
+def _date_from_tsx_filename(filename):
+    match = re.search(r'(20\d{6})T\d{6}', filename)
+    if not match:
+        match = re.search(r'(20\d{6})', filename)
+    if not match:
+        raise ValueError(f"Cannot extract TSX date from filename: {filename}")
+    return match.group(1)
 
 # This map is used to extract the date from the filenames of different radar types
 # 这个 map 是用来从不同类型雷达数据的文件名中提取日期的
@@ -36,4 +48,6 @@ get_date_from_filename = {
             'data': lambda x: re.search(r'bc.*(20\d{6})', x).group(1)},
     'CSK': {'meta': lambda x: re.search(r'_(20\d{6})\d{6}_', x).group(1),
             'data': lambda x: re.search(r'_(20\d{6})\d{6}_', x).group(1)}, 
+    'TSX': {'meta': _date_from_tsx_filename,
+            'data': _date_from_tsx_filename},
 }

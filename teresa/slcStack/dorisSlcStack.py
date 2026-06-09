@@ -54,16 +54,16 @@ class dorisSlcStack():
                 # 通过正则匹配，找到 data 数据文件，初始化 self.data_path_map
                 data_file = is_data_file[self.radar_type](filename)
                 if data_file:
-                    date_str = get_date_from_filename[self.radar_type]['data'](filename)
                     full_path = os.path.join(dirpath, filename)
+                    date_str = get_date_from_filename[self.radar_type]['data'](full_path)
                     self.data_path_map[date_str] = full_path  
 
                 # Use regex matching to find the meta files and initialize self.meta_path_map
                 # 通过正则匹配，找到 meta 元文件，初始化 self.meta_path_map
                 meta_file = is_meta_file[self.radar_type](filename)
                 if meta_file:
-                    date_str = get_date_from_filename[self.radar_type]['meta'](filename)
                     full_path = os.path.join(dirpath, filename)
+                    date_str = get_date_from_filename[self.radar_type]['meta'](full_path)
                     self.meta_path_map[date_str] = full_path   
 
         # Initialize self.dates, the list of dates

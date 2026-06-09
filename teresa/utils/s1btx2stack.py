@@ -6,7 +6,7 @@ import os
 import sys
 import re
 import shutil
-from s1tbx_stack import S1tbxStacks
+# from s1tbx_stack import S1tbxStacks
 
 from lxml import etree
 
@@ -142,15 +142,28 @@ def makedirs_if_not_exists(dir_name):
             raise e
 
 
-def do_dem(processdir):
-    source_dem_dir = "../../process_s1tbx/dem/merged_with_dem.data/" #TODO: too hardcoded?
+def link_file(source, target, target_dir=None):
+    if target_dir is None:
+        target_dir = os.path.dirname(target)
+    link_target = os.path.relpath(os.path.abspath(source),
+                                  os.path.abspath(target_dir))
+    if os.path.lexists(target):
+        os.remove(target)
+    os.symlink(link_target, target)
+    return link_target
+
+
+def do_dem(processdir, s1tbx_dir):
+    source_dem_dir = os.path.join(s1tbx_dir, "dem", "merged_with_dem.data")
     dest_dir = os.path.join(processdir, "dem")
     makedirs_if_not_exists(dest_dir)
     files_to_link = ["elevation.img", "elevation.hdr"]
     for f in files_to_link:
+        source = os.path.join(source_dem_dir, f)
+        target = os.path.join(dest_dir, f)
         try:
-            os.symlink(os.path.join(source_dem_dir, f),
-                       os.path.join(dest_dir, f))
+            link_target = link_file(source, target, dest_dir)
+            print('Link {} to {}'.format(target, link_target))
         except Exception as e:
             print (e)
 
@@ -288,30 +301,24 @@ def main(filename, role='slave', processdir='process'):
 
         if name == 'deramp' and role == 'master': continue
         # move the header files (imag and real and also derampDemodPhase)
-        frompath = os.path.join(basepath, thing['filepath'])
-        frompath = os.path.join('..', '..', frompath[frompath.find('process_s1tbx'):])
+        frompath = os.path.abspath(os.path.join(basepath, thing['filepath']))
         filename = os.path.split(frompath)[1]
         topath = os.path.join(goaldir, filename)
-        print('Link {} to {}'.format(topath, frompath))
         try:
-            if os.path.lexists(topath):
-                os.remove(topath)
-            os.symlink(frompath, topath)
+            link_target = link_file(frompath, topath, goaldir)
+            print('Link {} to {}'.format(topath, link_target))
         except Exception as e:
             print (e)
 
         # same for image file
         frompath = os.path.splitext(frompath)[0] + '.img'
-        frompath = os.path.join('..', '..', frompath[frompath.find('process_s1tbx'):])
         topath = os.path.splitext(topath)[0] + '.img'
         topath_relative = os.path.split(topath)[1]
 
         data['filepaths'][name]['filepath'] = topath_relative
-        print('Link {} to {}'.format(topath, frompath))
         try:
-            if os.path.lexists(topath):
-                os.remove(topath)
-            os.symlink(frompath, topath)
+            link_target = link_file(frompath, topath, goaldir)
+            print('Link {} to {}'.format(topath, link_target))
         except Exception as e:
             print (e)
 
@@ -417,7 +424,7 @@ if __name__ == "__main__":
 #        do_clean_target_dir(settings.processdir)
         for filename, role in todo:
             main(filename, role=role, processdir=settings.processdir)
-        do_dem(settings.processdir)
+        do_dem(settings.processdir, settings.dir)
         do_remove_master_images(settings.dir)
     else:
         print('This was just a dryrun, use -r or --run to really do something\n')
